@@ -55,3 +55,7 @@ Flash size: "4MB (FS:1MB OTA:~1019KB)"
 
 **I could forget something or do mistakes so use your brain and google to solve problems. Or just write your own firmware from the scratch**
 
+There are also Gerbers for those who would like to do like this:
+![webpage](https://github.com/onivan/clock-esp-tm1637/blob/main/20201208_160532.jpg)
+
+The compatible 1" one-digit 7-segment display models are TOYOLED E11001-G-UR3-0-W or Kingbright SA10-21SRWA (Common Anode )
