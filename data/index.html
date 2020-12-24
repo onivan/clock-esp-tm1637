@@ -1,0 +1,319 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name = "viewport" content = "width = device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable=0">
+	<meta charset="utf-8">
+	<title>Відлік часу</title>
+    <style>
+      body { background-color: darkgrey; font-family: Arial, Helvetica, Sans-Serif; Color: #000000; }
+	  h1, h2 {text-align:center;}
+      .wrap { padding:10px; text-align: center;}
+      #ledbox { width:50px;height:50px; background-color:black; border-radius: 50px; margin: 0 auto;}
+      
+      #ledon, #ledoff , #timereset {  height: 70px; font-size: 35px; font-weight:400;}
+      #ledon { border-radius: 57px; width: 48%; margin-top: 50px; color: #b6b6b6; background-color:darkgrey; }
+      #ledoff { width: 48%; color: black;}
+      #timereset { width: 180px; height: 70px; font-size: 30px; }
+      
+      #timebox {height: 90px; font-size: 70px; text-align: center; color: green;}
+	  
+	  #DHTbox, #Pressbox {width:100%; height: 70px; font-size: 30px; text-align: center; color: grey;}
+      #Pressbox, #DHTbox, #timeGreenMinus, #timeGreenPlus {display: inline-block; vertical-align: middle;}
+	  #timeGreenMinus, #timeGreenPlus {height: 30px; font-size: 20px; text-align: center; color: darkgreen;}
+	  
+	  input.setTimeZone {font-size: 30px; text-align: center; font-weight:normal;color:grey;}
+	  input.selected {font-weight:bold;color:darkgreen;}
+	  
+	  .setTimeHM p {font-size: 30px;}
+	  .setTimeHM input {font-size: 20px; text-align: center; font-weight:normal;color:black;}
+	  #setTimeZone {width:10%;}
+	  
+      .rangeslider{width: 50%; }
+      .myslider {
+		-webkit-appearance: none;
+		background: #FCF3CF  ;
+		width: 50%;
+		height: 20px;
+		opacity: 2;
+	   }
+	   .myslider:hover {
+			opacity: 1;
+		}
+		
+		.myslider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			cursor: pointer;
+			background: #34495E  ;
+			width: 5%;
+			height: 20px;
+		}
+    </style>
+      <script src="./jquery-3.4.1.min.js"></script>    
+	     
+  
+  </head>
+<body>
+	
+  <div class="wrap">
+	  <div id="connectionbox"></div>
+	  
+		  <p>Розташування:<span id="Name">??</span></p>
+	  
+  </div>
+  <!-- <h1>Відлік часу</h1> -->
+   <div id="timebox"></div>
+	<div class="wrap">
+		  <div id="DHTbox">-- --</div>
+		  <div id="Pressbox">-- --</div>
+	</div>
+	
+   
+   <!-- <h2>Сигнальне світло</h2> -->
+   <div class="wrap">
+   <!--  <div id="ledbox" ></div> -->
+    <input id="ledon"  type="submit" value="Світло"> 
+    <input id="ledoff" type="submit" value="Вимкн.">
+   </div> 
+    
+	<div class="wrap"> <div id="result"></div> </div>
+   <div class="wrap setTimeHM">
+	   <p>Корекція часу UTC:<span id="TZnow">??</span></p>
+	   <input id="setTimeZone"  type="number" pattern="[0-9]{2}" min="-12" max="+12" step="1" size="2" value="00" > 
+	   <input id="setTZSubmit"  type="submit" value="OK">
+	</div>
+	
+	<div class="wrap setTimeHM">
+	   <p>Корекція Температури:<span id="TempCorrNow">??</span></p>
+	   <input id="setTempCorr"  type="number" pattern="[0-9]{2}" min="-12" max="+12" step="1" size="2" value="00" > 
+	   <input id="setTempSubmit"  type="submit" value="OK">
+	</div>
+	
+	<div class="wrap setTimeHM">
+	   <p>Встановити час:</p>
+	   <input id="setTimeH"  type="number" pattern="[0-9]{2}" min="0" max="24" step="1" size="2" value="00" >
+	   <input id="setTimeM"  type="number" pattern="[0-9]{2}" min="0" max="59" step="1" size="2" value="00" > 
+	   <input id="setTimeSubmit"  type="submit" value="OK">
+	</div>
+	
+	<div class="wrap">
+	   <input id="setName"  type="text" size="10" value="Ім'я" > 
+	   <input id="setNameSubmit"  type="submit" value="OK">
+	</div>
+ 
+<script>
+
+	var host = "esp.php/";
+		
+	$(document).ready(function(){
+		$('#ledbox').css('background-color','grey');
+		
+		
+		$.ajax({
+			  method: "GET",
+			  url: host,
+			  //data: {'gettime':''}
+			  success: function() {
+				console.log("host = '" + host + "'");
+
+			  }
+		  })
+		  .fail(function() {
+			console.log("host = '_'");
+			host = "";	
+		  });
+			
+		getStatus();
+	});
+
+	
+	function updateRed() {
+		console.log('rangeRed ' + $('#sliderRed').val());
+		$('#valRed').text ( $('#sliderRed').val() );
+	}
+	
+	
+	$('#ledon').click(function() {
+		// Send the data using post
+	 var url = host + "ledon";
+	 	
+	 var posting = $.get( url );
+	 
+	  // Put the results in a div
+	  posting.done(function( responseText ) {
+		$( "#result" ).empty().append( responseText ).css('color','green');
+		
+		getStatus();
+	  
+	  })
+	  .fail(function() {
+		  $( "#result" ).empty().append( "Нема зв'язку" ).css('color','red');
+				  
+	  });
+	});
+	
+	
+	$('#ledoff').click(function() {
+		// Send the data using post
+	 var url = host + "ledoff";
+	 	
+	 var posting = $.get( url );
+	 
+	  // Put the results in a div
+	  posting.done(function( responseText ) {
+		$( "#result" ).empty().append( responseText ).css('color','green');
+		
+		getStatus();
+	  
+	  })
+	  .fail(function() {
+			$( "#result" ).empty().append( "Нема зв'язку" ).css('color','red');
+				  
+	  });
+	});
+	
+	$('#setTZSubmit').click(function() {
+		// Send the data using post
+	 var url = host + "?TZ=" + $('#setTimeZone').val();
+	 console.log('url= ' + url);	
+	 var posting = $.get( url );
+	 
+	  // Put the results in a div
+	  posting.done(function( responseText ) {
+		$( "#result" ).empty().append( responseText ).css('color','green');
+		getStatus();
+	  })
+	  .fail(function() {
+			$( "#result" ).empty().append( "Нема зв'язку" ).css('color','red');
+	  });
+	});
+	
+	$('#setTimeSubmit').click(function() {
+		// Send the data using post
+	 var url = host + "?TimeH=" + $('#setTimeH').val() + "&TimeM=" + $('#setTimeM').val();
+	 console.log('url= ' + url);	
+	 var posting = $.get( url );
+	 
+	  // Put the results in a div
+	  posting.done(function( responseText ) {
+		$( "#result" ).empty().append( responseText ).css('color','green');
+		getStatus();
+	  })
+	  .fail(function() {
+			$( "#result" ).empty().append( "Нема зв'язку" ).css('color','red');
+	  });
+	});
+	
+	$('#setTempSubmit').click(function() {
+		// Send the data using post
+	 var url = host + "?TempCorr=" + $('#setTempCorr').val();
+	 console.log('url= ' + url);	
+	 var posting = $.get( url );
+	 
+	  // Put the results in a div
+	  posting.done(function( responseText ) {
+		$( "#result" ).empty().append( responseText ).css('color','green');
+		getStatus();
+	  })
+	  .fail(function() {
+			$( "#result" ).empty().append( "Нема зв'язку" ).css('color','red');
+	  });
+	});
+
+	$('#setNameSubmit').click(function() {
+		// Send the data using post
+	 var url = host + "?Name=" + $('#setName').val();
+	 console.log('url= ' + url);	
+	 var posting = $.get( url );
+	 
+	  // Put the results in a div
+	  posting.done(function( responseText ) {
+		$( "#result" ).empty().append( responseText ).css('color','green');
+		getStatus();
+	  })
+	  .fail(function() {
+			$( "#result" ).empty().append( "Нема зв'язку" ).css('color','red');
+	  });
+	});
+		
+	
+	$('#timereset').click(function() {
+		// Send the data using post
+	 var url = host + "timereset";
+	 	
+	 var posting = $.get( url );
+	 
+	  // Put the results in a div
+	  posting.done(function( responseText ) {
+		$( "#result" ).empty().append( responseText ).css('color','green');
+		getStatus();
+	  })
+	  .fail(function() {
+			$( "#result" ).empty().append( "Нема зв'язку" ).css('color','red');
+	  });
+	});
+
+
+	function getStatus(){
+		
+		$.ajax({
+			  method: "GET",
+			  url: host + "getstatus",
+			  //data: {'gettime':''}
+			})
+			  .done(function( responseText ) {
+				  
+			//	console.log(responseText);
+				var obj = JSON && JSON.parse(responseText) || $.parseJSON(responseText);
+				var pressHg = obj.press*0.75006;
+				console.log(obj);
+				$( "#timebox" ).empty().append( obj.time ).css('color','Green');
+				$( "#TZnow" ).empty().append(obj.timezone).css('color','Green');
+				$( "#TempCorrNow" ).empty().append(obj.TempCorr).css('color','Green');
+				$( "#Name" ).empty().append(obj.Name).css('color','Green');
+				
+				
+				$( "#DHTbox" ).empty().append( obj.humid + "%  " + obj.temper + "°C").css('color','Green');				
+				$( "#Pressbox" ).empty().append( obj.press + " hPa  ("  +  pressHg.toFixed(1) + " mmHg)").css('color','Green');				
+				
+				
+				if (obj.led < 50 ) {
+					//$('#ledbox').css('background-color','black');
+					$('#ledon').css('background-color','#2d2c2c');
+					
+				}else {
+					//$('#ledbox').css('background-color','red');
+					$('#ledon').css('background-color','red');
+				}
+				
+				$( "#connectionbox" ).empty().append( "Під'єднано" ).css('color','yellow').css('background-color','green');
+				$("#acsetup").css('display','block');
+				
+				
+			  })
+			    .fail(function() {
+				  $( "#connectionbox" ).empty().append( "Нема зв'язку" ).css('color','yellow').css('background-color','red');
+				  $( "#timebox" ).css('color','grey');
+				  $( "#DHTbox" ).css('color','grey');
+				  $( "#TZnow" ).empty().append('??').css('color','grey');
+				  $( "#TempCorrNow" ).empty().append('??').css('color','grey');
+				  $( "#Name" ).empty().append('??').css('color','grey');
+				  
+				  //$('#ledbox').css('background-color','grey');
+				  $('#ledon').css('background-color','grey');
+				  $('#ledoff').css('background-color','grey');
+				  $("#acsetup").css('display','none');
+				  
+				  
+			  });
+			  
+			  
+	}
+	
+	var ainterval = 10000;
+
+	var auto_refresh_progress = setInterval(getStatus, ainterval); // refresh every 10000 milliseconds
+		
+</script>
+
+</body>
+</html>
