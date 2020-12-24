@@ -15,10 +15,10 @@ Converting a 7 segment STC Chinese clock to ESP8266 + tm1637 with optional BME28
 * webserver with http page showing the time, humidity, temperature, pressure; Time zone, tempreture bias setup, manual clock setup.
 
 List of unnecessary for me and therefore absent functions:
-* **no** date display/set
-* **no** alarm
-* **no RTC** (the clock doesn't work without electricity anyway so why bother)
-* **no etc**
+* no date display/set
+* no alarm
+* no RTC (the clock doesn't work without electricity anyway so why bother)
+* no etc
 
 # The bodging diagram
 * Blue: connect to Wemos board
