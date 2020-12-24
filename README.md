@@ -5,6 +5,7 @@ Converting a 7 segment STC Chinese clock to ESP8266 + tm1637 with optional BME28
 *No major hardware changes required: just a small bunch of wires between ESP8266, clock PCB, TM1637 module and BME280/BMP280 module.*
 
 ![webpage](https://github.com/onivan/clock-esp-tm1637/blob/main/20200731_182114.jpg)
+![webpage](https://github.com/onivan/clock-esp-tm1637/blob/main/20201224_150552-cut.jpg)
 
 **Attention: the following project contains fast-and-dirty firmware code. Made for myself so you probably would need to adapt it for your needs.**
 
