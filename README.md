@@ -28,11 +28,7 @@ List of unnecessary for me and therefore absent functions:
 
 ![webpage](https://github.com/onivan/clock-esp-tm1637/blob/main/Clock-TM1637connections.jpg)
 
-# Firmware
-## Flash precompiled bin with ESPRESSIF Flash Download Tools (just google how to)
-or
-
-# Compile it 
+# Upload Firmware 
 Google how to use ESP in Arduino envoriment
 Choose a board "LOLIN(WEMOS) D1 R2 & mini"
 Flash size: "4MB (FS:1MB OTA:~1019KB)"
