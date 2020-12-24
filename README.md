@@ -23,7 +23,7 @@ List of unnecessary for me and therefore absent functions:
 # The bodging diagram
 * Blue: connect to Wemos board
 * Purple: connect to TM1637 module
-* Look trough other photos
+* Look trough other photos to get a hints
 
 ![webpage](https://github.com/onivan/clock-esp-tm1637/blob/main/Clock-TM1637connections.jpg)
 
